@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - carsTUmotor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+            background: #f8f8f8;
+        }
+
+        /* ==================== NAVBAR ==================== */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: #ff6b35;
+            font-size: 2rem;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #ff6b35, #ff9f1c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #ff6b35;
+        }
+
+        .btn-login:hover {
+            background: #ff6b35;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #ff6b35, #ff9f1c);
+            color: #fff;
+            border: 2px solid transparent;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        /* ==================== HEADER ==================== */
+        .page-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            padding: 3.5rem 2rem 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.18) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: -60%;
+            left: -10%;
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, rgba(255, 159, 28, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .breadcrumbs {
+            display: inline-flex;
+            gap: 0.5rem;
+            align-items: center;
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 0.75rem;
+        }
+
+        .breadcrumbs a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .page-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 0.6rem;
+            background: linear-gradient(135deg, #fff, #ff9f1c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: rgba(255,255,255,0.78);
+            max-width: 720px;
+        }
+
+        /* ==================== FILTER BAR (ESTÉTICO) ==================== */
+        .filters-wrap {
+            max-width: 1200px;
+            margin: -1.5rem auto 0;
+            padding: 0 2rem;
+        }
+
+        .filters {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr auto;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .input {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            background: #f6f6f6;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 10px;
+            padding: 0.8rem 0.9rem;
+            color: #333;
+        }
+
+        .input i {
+            color: #ff6b35;
+        }
+
+        .input input,
+        .input select {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .btn-action {
+            padding: 0.85rem 1.2rem;
+            background: linear-gradient(135deg, #ff6b35, #ff9f1c);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            justify-content: center;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.25);
+        }
+
+        /* ==================== CATALOG GRID ==================== */
+        .catalog {
+            max-width: 1200px;
+            margin: 1.8rem auto 0;
+            padding: 0 2rem 4rem;
+        }
+
+        .catalog-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 1rem;
+            margin: 1.5rem 0 1rem;
+        }
+
+        .catalog-top h2 {
+            font-size: 1.6rem;
+            color: #1a1a2e;
+        }
+
+        .catalog-top p {
+            color: #666;
+            font-size: 0.98rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.4rem;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 36px rgba(255, 107, 53, 0.14);
+            border-color: rgba(255, 107, 53, 0.35);
+        }
+
+        .media {
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+            aspect-ratio: 16 / 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: #fff;
+            padding: 0.35rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .media i {
+            font-size: 2.8rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 1rem 1rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            flex: 1;
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.8rem;
+            align-items: baseline;
+        }
+
+        .title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #1a1a2e;
+        }
+
+        .year {
+            color: #666;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+        }
+
+        .meta-item {
+            background: #f6f6f6;
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 0.55rem 0.6rem;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #444;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .meta-item i {
+            color: #ff6b35;
+        }
+
+        .card-actions {
+            margin-top: auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.7rem;
+        }
+
+        .btn-ghost {
+            padding: 0.8rem 0.9rem;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.12);
+            background: #fff;
+            color: #1a1a2e;
+            font-weight: 800;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+        }
+
+        .btn-ghost:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 107, 53, 0.5);
+            box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+        }
+
+        .btn-solid {
+            padding: 0.8rem 0.9rem;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #ff6b35, #ff9f1c);
+            color: #fff;
+            font-weight: 900;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+        }
+
+        .btn-solid:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 26px rgba(255, 107, 53, 0.22);
+        }
+
+        footer {
+            background: #0f0f1e;
+            color: #999;
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 900px) {
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .catalog-top {
+                flex-direction: column;
+                align-items: start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .filters-wrap {
+                padding: 0 1.1rem;
+            }
+
+            .catalog {
+                padding: 0 1.1rem 3.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">
+            <i class="fas fa-car-side"></i>
+            <span>carsTUmotor</span>
+        </a>
+        <div class="nav-buttons">
+            <a class="btn btn-login" href="/login">
+                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+            </a>
+            <a class="btn btn-register" href="/register">
+                <i class="fas fa-user-plus"></i> Registrarse
+            </a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="header-inner">
+            <div class="breadcrumbs">
+                <a href="/">Inicio</a>
+                <span>/</span>
+                <span>Catálogo</span>
+            </div>
+            <h1 class="page-title">Catálogo de vehículos</h1>
+            <p class="page-subtitle">Vista estética (mock). Próximamente vas a poder filtrar, ver detalles y publicar vehículos cuando conectemos base de datos.</p>
+        </div>
+    </header>
+
+    <div class="filters-wrap">
+        <div class="filters">
+            <div class="input">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar por marca o modelo (demo)" disabled>
+            </div>
+            <div class="input">
+                <i class="fas fa-car"></i>
+                <select disabled>
+                    <option>Categoría (demo)</option>
+                    <option>Sedán</option>
+                    <option>SUV</option>
+                    <option>Pickup</option>
+                </select>
+            </div>
+            <div class="input">
+                <i class="fas fa-filter"></i>
+                <select disabled>
+                    <option>Ordenar (demo)</option>
+                    <option>Más nuevos</option>
+                    <option>Año (desc)</option>
+                    <option>Kilometraje</option>
+                </select>
+            </div>
+            <a class="btn-action" href="#catalogo">
+                <i class="fas fa-bolt"></i> Ver resultados
+            </a>
+        </div>
+    </div>
+
+    <main class="catalog" id="catalogo">
+        <div class="catalog-top">
+            <div>
+                <h2>Vehículos destacados</h2>
+                <p>Mostrando ejemplos (sin base de datos).</p>
+            </div>
+            <p>Resultados: 8</p>
+        </div>
+
+        <div class="grid">
+            <article class="card">
+                <div class="media">
+                    <span class="badge"><i class="fas fa-crown"></i> Destacado</span>
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="content">
+                    <div class="title-row">
+                        <div class="title">Toyota Corolla</div>
+                        <div class="year">2020</div>
+                    </div>
+                    <div class="meta">
+                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
+                        <div class="meta-item"><i class="fas fa-gear"></i> AT</div>
+                        <div class="meta-item"><i class="fas fa-road"></i> 45k km</div>
+                    </div>
+                    <div class="card-actions">
+                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="media">
+                    <span class="badge"><i class="fas fa-shield"></i> Verificado</span>
+                    <i class="fas fa-truck-pickup"></i>
+                </div>
+                <div class="content">
+                    <div class="title-row">
+                        <div class="title">Ford Ranger</div>
+                        <div class="year">2019</div>
+                    </div>
+                    <div class="meta">
+                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Diésel</div>
+                        <div class="meta-item"><i class="fas fa-gear"></i> MT</div>
+                        <div class="meta-item"><i class="fas fa-road"></i> 78k km</div>
+                    </div>
+                    <div class="card-actions">
+                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="media">
+                    <span class="badge"><i class="fas fa-tag"></i> Recomendado</span>
+                    <i class="fas fa-car-side"></i>
+                </div>
+                <div class="content">
+                    <div class="title-row">
+                        <div class="title">Volkswagen Golf</div>
+                        <div class="year">2018</div>
+                    </div>
+                    <div class="meta">
+                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
+                        <div class="meta-item"><i class="fas fa-gear"></i> MT</div>
+                        <div class="meta-item"><i class="fas fa-road"></i> 92k km</div>
+                    </div>
+                    <div class="card-actions">
+                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="media">
+                    <span class="badge"><i class="fas fa-bolt"></i> Nuevo</span>
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="content">
+                    <div class="title-row">
+                        <div class="title">Honda CR-V</div>
+                        <div class="year">2021</div>
+                    </div>
+                    <div class="meta">
+                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
+                        <div class="meta-item"><i class="fas fa-gear"></i> AT</div>
+                        <div class="meta-item"><i class="fas fa-road"></i> 22k km</div>
+                    </div>
+                    <div class="card-actions">
+                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="media">
+                    <span class="badge"><i class="fas fa-shield"></i> Verificado</span>
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="content">
+                    <div class="title-row">
+                        <div class="title">Chevrolet Onix</div>
+                        <div class="year">2020</div>
+                    </div>
+                    <div class="meta">
+                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
+                        <div class="meta-item"><i class="fas fa-gear"></i> MT</div>
+                        <div class="meta-item"><i class="fas fa-road"></i> 38k km</div>
+                    </div>
+                    <div class="card-actions">
+                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="media">
+                    <span class="badge"><i class="fas fa-tag"></i> Recomendado</span>
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="content">
+                    <div class="title-row">
+                        <div class="title">Renault Sandero</div>
+                        <div class="year">2017</div>
+                    </div>
+                    <div class="meta">
+                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
+                        <div class="meta-item"><i class="fas fa-gear"></i> MT</div>
+                        <div class="meta-item"><i class="fas fa-road"></i> 110k km</div>
+                    </div>
+                    <div class="card-actions">
+                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="media">
+                    <span class="badge"><i class="fas fa-bolt"></i> Nuevo</span>
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="content">
+                    <div class="title-row">
+                        <div class="title">Nissan Kicks</div>
+                        <div class="year">2022</div>
+                    </div>
+                    <div class="meta">
+                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
+                        <div class="meta-item"><i class="fas fa-gear"></i> AT</div>
+                        <div class="meta-item"><i class="fas fa-road"></i> 9k km</div>
+                    </div>
+                    <div class="card-actions">
+                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="media">
+                    <span class="badge"><i class="fas fa-shield"></i> Verificado</span>
+                    <i class="fas fa-van-shuttle"></i>
+                </div>
+                <div class="content">
+                    <div class="title-row">
+                        <div class="title">Peugeot 2008</div>
+                        <div class="year">2019</div>
+                    </div>
+                    <div class="meta">
+                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
+                        <div class="meta-item"><i class="fas fa-gear"></i> AT</div>
+                        <div class="meta-item"><i class="fas fa-road"></i> 64k km</div>
+                    </div>
+                    <div class="card-actions">
+                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 carsTUmotor. Todos los derechos reservados.</p>
+        <p>Términos de servicio | Política de privacidad | Contáctanos</p>
+    </footer>
+</body>
+</html>

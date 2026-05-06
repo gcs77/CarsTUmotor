@@ -396,20 +396,48 @@
                 <div class="form-title">Registrarse</div>
                 <div class="form-subtitle">Creá tu cuenta en pocos pasos</div>
 
-                <form action="#" method="POST">
+                <form action="/register" method="POST">
+                    @csrf
                     <div class="field">
                         <div class="label">Nombre</div>
                         <div class="control">
                             <i class="fas fa-user"></i>
-                            <input type="text" name="name" placeholder="Tu nombre" autocomplete="name" required>
+                            <input type="text" name="name" value="{{ old('name') }}" placeholder="Tu nombre" autocomplete="name" required>
                         </div>
+                        @error('name')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="field">
                         <div class="label">Email</div>
                         <div class="control">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" name="email" placeholder="tuemail@email.com" autocomplete="email" required>
+                            <input type="email" name="email" value="{{ old('email') }}" placeholder="tuemail@email.com" autocomplete="email" required>
+                        </div>
+                        @error('email')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="field">
+                        <div class="label">Teléfono (opcional)</div>
+                        <div class="control">
+                            <i class="fas fa-phone"></i>
+                            <input type="text" name="phone" value="{{ old('phone') }}" placeholder="+57 300 123 4567" autocomplete="tel">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="label">Tipo de cuenta</div>
+                        <div class="control">
+                            <i class="fas fa-user-tag"></i>
+                            <select name="role" required style="width: 100%; border: none; background: transparent; font-size: 1rem; outline: none;">
+                                <option value="externo" {{ old('role') == 'externo' ? 'selected' : '' }}>Usuario externo</option>
+                                <option value="jefe" {{ old('role') == 'jefe' ? 'selected' : '' }}>Jefe</option>
+                                <option value="negocios_internacionales" {{ old('role') == 'negocios_internacionales' ? 'selected' : '' }}>Profesional de negocios internacionales</option>
+                                <option value="contador" {{ old('role') == 'contador' ? 'selected' : '' }}>Contador / Finanzas</option>
+                            </select>
                         </div>
                     </div>
 
@@ -419,6 +447,9 @@
                             <i class="fas fa-lock"></i>
                             <input type="password" name="password" placeholder="••••••••" autocomplete="new-password" required>
                         </div>
+                        @error('password')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="field">

@@ -6,6 +6,9 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class AuthController extends Controller
 {
@@ -57,5 +60,47 @@ class AuthController extends Controller
     public function me(): JsonResponse
     {
         return response()->json(auth()->user());
+    }
+
+    public function loginForm(): View
+    {
+        return view('auth.login');
+    }
+
+    public function registerForm(): View
+    {
+        return view('auth.register');
+    }
+
+    public function loginWeb(LoginRequest $request): RedirectResponse
+    {
+        $user = $this->authService->authenticate(
+            $request->input('email'),
+            $request->input('password')
+        );
+
+        if (!$user) {
+            return back()->withErrors(['email' => 'Credenciales incorrectas.'])->withInput();
+        }
+
+        $this->authService->loginUser($user);
+
+        return redirect()->intended('/catalogo');
+    }
+
+    public function registerWeb(RegisterRequest $request): RedirectResponse
+    {
+        $user = $this->authService->register($request->validated());
+        $this->authService->loginUser($user);
+        $user->sendEmailVerificationNotification();
+
+        return redirect('/email/verify');
+    }
+
+    public function logoutWeb(Request $request): RedirectResponse
+    {
+        $this->authService->logoutUser();
+
+        return redirect('/');
     }
 }

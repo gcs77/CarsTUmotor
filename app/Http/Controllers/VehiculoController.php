@@ -6,6 +6,7 @@ use App\Interfaces\IVehiculoRepository;
 use App\Services\CatalogoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class VehiculoController extends Controller
 {
@@ -13,6 +14,19 @@ class VehiculoController extends Controller
         private CatalogoService $catalogoService,
         private IVehiculoRepository $vehiculoRepository
     ) {}
+
+    public function catalogo(Request $request): View
+    {
+        $filters = $request->only(['marca', 'color', 'precio_min', 'precio_max']);
+
+        if (!empty(array_filter($filters))) {
+            $vehiculos = $this->catalogoService->buscar($filters);
+        } else {
+            $vehiculos = $this->catalogoService->listarDisponibles();
+        }
+
+        return view('catalogo', compact('vehiculos'));
+    }
 
     public function index(): JsonResponse
     {

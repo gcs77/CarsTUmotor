@@ -393,12 +393,22 @@
             <span>carsTUmotor</span>
         </a>
         <div class="nav-buttons">
-            <a class="btn btn-login" href="/login">
-                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
-            </a>
-            <a class="btn btn-register" href="/register">
-                <i class="fas fa-user-plus"></i> Registrarse
-            </a>
+            @auth
+                <span style="color: #fff; font-weight: 600;">{{ auth()->user()->name }}</span>
+                <form method="POST" action="/logout" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-login" style="cursor:pointer;">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                    </button>
+                </form>
+            @else
+                <a class="btn btn-login" href="/login">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                </a>
+                <a class="btn btn-register" href="/register">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </a>
+            @endauth
         </div>
     </nav>
 

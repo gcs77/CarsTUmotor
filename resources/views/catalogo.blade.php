@@ -476,12 +476,22 @@
             <span>carsTUmotor</span>
         </a>
         <div class="nav-buttons">
-            <a class="btn btn-login" href="/login">
-                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
-            </a>
-            <a class="btn btn-register" href="/register">
-                <i class="fas fa-user-plus"></i> Registrarse
-            </a>
+            @auth
+                <span style="color: #fff; font-weight: 600;">{{ auth()->user()->name }}</span>
+                <form method="POST" action="/logout" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-login" style="cursor:pointer;">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                    </button>
+                </form>
+            @else
+                <a class="btn btn-login" href="/login">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                </a>
+                <a class="btn btn-register" href="/register">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </a>
+            @endauth
         </div>
     </nav>
 
@@ -493,217 +503,83 @@
                 <span>Catálogo</span>
             </div>
             <h1 class="page-title">Catálogo de vehículos</h1>
-            <p class="page-subtitle">Vista estética (mock). Próximamente vas a poder filtrar, ver detalles y publicar vehículos cuando conectemos base de datos.</p>
+            <p class="page-subtitle">Explora nuestros vehículos disponibles y agenda tu asesoría personalizada.</p>
         </div>
     </header>
 
     <div class="filters-wrap">
-        <div class="filters">
+        <form class="filters" method="GET" action="/catalogo">
             <div class="input">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="text" placeholder="Buscar por marca o modelo (demo)" disabled>
+                <input type="text" name="marca" placeholder="Buscar por marca o modelo" value="{{ request('marca') }}">
             </div>
             <div class="input">
-                <i class="fas fa-car"></i>
-                <select disabled>
-                    <option>Categoría (demo)</option>
-                    <option>Sedán</option>
-                    <option>SUV</option>
-                    <option>Pickup</option>
+                <i class="fas fa-palette"></i>
+                <select name="color">
+                    <option value="">Todos los colores</option>
+                    <option value="Rojo" {{ request('color') == 'Rojo' ? 'selected' : '' }}>Rojo</option>
+                    <option value="Azul" {{ request('color') == 'Azul' ? 'selected' : '' }}>Azul</option>
+                    <option value="Negro" {{ request('color') == 'Negro' ? 'selected' : '' }}>Negro</option>
+                    <option value="Blanco" {{ request('color') == 'Blanco' ? 'selected' : '' }}>Blanco</option>
+                    <option value="Gris" {{ request('color') == 'Gris' ? 'selected' : '' }}>Gris</option>
+                    <option value="Plata" {{ request('color') == 'Plata' ? 'selected' : '' }}>Plata</option>
                 </select>
             </div>
             <div class="input">
-                <i class="fas fa-filter"></i>
-                <select disabled>
-                    <option>Ordenar (demo)</option>
-                    <option>Más nuevos</option>
-                    <option>Año (desc)</option>
-                    <option>Kilometraje</option>
-                </select>
+                <i class="fas fa-dollar-sign"></i>
+                <input type="number" name="precio_max" placeholder="Precio máximo" value="{{ request('precio_max') }}">
             </div>
-            <a class="btn-action" href="#catalogo">
+            <button type="submit" class="btn-action">
                 <i class="fas fa-bolt"></i> Ver resultados
-            </a>
-        </div>
+            </button>
+        </form>
     </div>
 
     <main class="catalog" id="catalogo">
         <div class="catalog-top">
             <div>
                 <h2>Vehículos destacados</h2>
-                <p>Mostrando ejemplos (sin base de datos).</p>
+                <p>Mostrando vehículos disponibles.</p>
             </div>
-            <p>Resultados: 8</p>
+            <p>Resultados: {{ $vehiculos->count() }}</p>
         </div>
 
         <div class="grid">
+            @forelse($vehiculos as $vehiculo)
             <article class="card">
                 <div class="media">
-                    <span class="badge"><i class="fas fa-crown"></i> Destacado</span>
-                    <i class="fas fa-car"></i>
+                    @if($vehiculo->disponible)
+                        <span class="badge"><i class="fas fa-check-circle"></i> Disponible</span>
+                    @else
+                        <span class="badge"><i class="fas fa-times-circle"></i> No disponible</span>
+                    @endif
+                    @if($vehiculo->imagen)
+                        <img src="{{ $vehiculo->imagen }}" alt="{{ $vehiculo->marca }} {{ $vehiculo->modelo }}" style="width:100%;height:100%;object-fit:cover;">
+                    @else
+                        <i class="fas fa-car"></i>
+                    @endif
                 </div>
                 <div class="content">
                     <div class="title-row">
-                        <div class="title">Toyota Corolla</div>
-                        <div class="year">2020</div>
+                        <div class="title">{{ $vehiculo->marca }} {{ $vehiculo->modelo }}</div>
+                        <div class="year">{{ $vehiculo->color }}</div>
                     </div>
                     <div class="meta">
-                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
-                        <div class="meta-item"><i class="fas fa-gear"></i> AT</div>
-                        <div class="meta-item"><i class="fas fa-road"></i> 45k km</div>
+                        <div class="meta-item"><i class="fas fa-door-open"></i> {{ $vehiculo->puertas }} pta</div>
+                        <div class="meta-item"><i class="fas fa-gauge-high"></i> {{ $vehiculo->hp }} HP</div>
+                        <div class="meta-item"><i class="fas fa-tag"></i> ${{ number_format($vehiculo->precio_cliente, 0, ',', '.') }}</div>
                     </div>
                     <div class="card-actions">
                         <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
                     </div>
                 </div>
             </article>
-
-            <article class="card">
-                <div class="media">
-                    <span class="badge"><i class="fas fa-shield"></i> Verificado</span>
-                    <i class="fas fa-truck-pickup"></i>
-                </div>
-                <div class="content">
-                    <div class="title-row">
-                        <div class="title">Ford Ranger</div>
-                        <div class="year">2019</div>
-                    </div>
-                    <div class="meta">
-                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Diésel</div>
-                        <div class="meta-item"><i class="fas fa-gear"></i> MT</div>
-                        <div class="meta-item"><i class="fas fa-road"></i> 78k km</div>
-                    </div>
-                    <div class="card-actions">
-                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card">
-                <div class="media">
-                    <span class="badge"><i class="fas fa-tag"></i> Recomendado</span>
-                    <i class="fas fa-car-side"></i>
-                </div>
-                <div class="content">
-                    <div class="title-row">
-                        <div class="title">Volkswagen Golf</div>
-                        <div class="year">2018</div>
-                    </div>
-                    <div class="meta">
-                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
-                        <div class="meta-item"><i class="fas fa-gear"></i> MT</div>
-                        <div class="meta-item"><i class="fas fa-road"></i> 92k km</div>
-                    </div>
-                    <div class="card-actions">
-                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card">
-                <div class="media">
-                    <span class="badge"><i class="fas fa-bolt"></i> Nuevo</span>
-                    <i class="fas fa-car"></i>
-                </div>
-                <div class="content">
-                    <div class="title-row">
-                        <div class="title">Honda CR-V</div>
-                        <div class="year">2021</div>
-                    </div>
-                    <div class="meta">
-                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
-                        <div class="meta-item"><i class="fas fa-gear"></i> AT</div>
-                        <div class="meta-item"><i class="fas fa-road"></i> 22k km</div>
-                    </div>
-                    <div class="card-actions">
-                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card">
-                <div class="media">
-                    <span class="badge"><i class="fas fa-shield"></i> Verificado</span>
-                    <i class="fas fa-car"></i>
-                </div>
-                <div class="content">
-                    <div class="title-row">
-                        <div class="title">Chevrolet Onix</div>
-                        <div class="year">2020</div>
-                    </div>
-                    <div class="meta">
-                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
-                        <div class="meta-item"><i class="fas fa-gear"></i> MT</div>
-                        <div class="meta-item"><i class="fas fa-road"></i> 38k km</div>
-                    </div>
-                    <div class="card-actions">
-                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card">
-                <div class="media">
-                    <span class="badge"><i class="fas fa-tag"></i> Recomendado</span>
-                    <i class="fas fa-car"></i>
-                </div>
-                <div class="content">
-                    <div class="title-row">
-                        <div class="title">Renault Sandero</div>
-                        <div class="year">2017</div>
-                    </div>
-                    <div class="meta">
-                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
-                        <div class="meta-item"><i class="fas fa-gear"></i> MT</div>
-                        <div class="meta-item"><i class="fas fa-road"></i> 110k km</div>
-                    </div>
-                    <div class="card-actions">
-                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card">
-                <div class="media">
-                    <span class="badge"><i class="fas fa-bolt"></i> Nuevo</span>
-                    <i class="fas fa-car"></i>
-                </div>
-                <div class="content">
-                    <div class="title-row">
-                        <div class="title">Nissan Kicks</div>
-                        <div class="year">2022</div>
-                    </div>
-                    <div class="meta">
-                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
-                        <div class="meta-item"><i class="fas fa-gear"></i> AT</div>
-                        <div class="meta-item"><i class="fas fa-road"></i> 9k km</div>
-                    </div>
-                    <div class="card-actions">
-                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card">
-                <div class="media">
-                    <span class="badge"><i class="fas fa-shield"></i> Verificado</span>
-                    <i class="fas fa-van-shuttle"></i>
-                </div>
-                <div class="content">
-                    <div class="title-row">
-                        <div class="title">Peugeot 2008</div>
-                        <div class="year">2019</div>
-                    </div>
-                    <div class="meta">
-                        <div class="meta-item"><i class="fas fa-gas-pump"></i> Nafta</div>
-                        <div class="meta-item"><i class="fas fa-gear"></i> AT</div>
-                        <div class="meta-item"><i class="fas fa-road"></i> 64k km</div>
-                    </div>
-                    <div class="card-actions">
-                        <a class="btn-solid" href="#"><i class="fas fa-eye"></i> Ver ficha</a>
-                    </div>
-                </div>
-            </article>
+            @empty
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                <i class="fas fa-car" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+                <p>No se encontraron vehículos con los filtros seleccionados.</p>
+            </div>
+            @endforelse
         </div>
     </main>
 

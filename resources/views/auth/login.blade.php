@@ -436,13 +436,17 @@
                 <div class="form-title">Iniciar sesión</div>
                 <div class="form-subtitle">Completá tus datos para continuar</div>
 
-                <form action="#" method="POST">
+                <form action="/login" method="POST">
+                    @csrf
                     <div class="field">
                         <div class="label">Email</div>
                         <div class="control">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" name="email" placeholder="tuemail@email.com" autocomplete="email" required>
+                            <input type="email" name="email" value="{{ old('email') }}" placeholder="tuemail@email.com" autocomplete="email" required>
                         </div>
+                        @error('email')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="field">
@@ -451,6 +455,9 @@
                             <i class="fas fa-lock"></i>
                             <input type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
                         </div>
+                        @error('password')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="row">

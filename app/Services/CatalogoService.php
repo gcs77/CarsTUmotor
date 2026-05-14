@@ -14,7 +14,7 @@ class CatalogoService
 
     public function listarDisponibles(): Collection
     {
-        return $this->vehiculoRepository->findAvailable();
+        return $this->vehiculoRepository->findAvailable()->makeHidden(['costo_empresa']);
     }
 
     public function obtenerDetalle(int $id): ?Vehiculo

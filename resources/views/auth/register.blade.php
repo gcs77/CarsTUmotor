@@ -381,7 +381,7 @@
                     <div>
                         <div class="tag"><i class="fas fa-user-plus"></i> Crear cuenta</div>
                         <h1>Sumate a carsTUmotor</h1>
-                        <p>Esta pantalla es solo estética por ahora. Más adelante conectamos validaciones, guardado en base de datos y el backend.</p>
+                        <p>Creá tu cuenta de cliente para acceder al catálogo, ver precios y solicitar la compra de tu próximo vehículo.</p>
                     </div>
 
                     <div class="benefits">
@@ -396,7 +396,12 @@
                 <div class="form-title">Registrarse</div>
                 <div class="form-subtitle">Creá tu cuenta en pocos pasos</div>
 
-                <form action="#" method="POST">
+                <div class="note" id="register-error" style="display:none;background:#fff2f2;border-color:rgba(255,107,53,0.35);color:#6a2a1c;">
+                    <i class="fas fa-circle-exclamation" style="margin-top: 2px;"></i>
+                    <div id="register-error-text"></div>
+                </div>
+
+                <form id="register-form" method="post" action="#">
                     <div class="field">
                         <div class="label">Nombre</div>
                         <div class="control">
@@ -448,5 +453,60 @@
         <p>&copy; 2024 carsTUmotor. Todos los derechos reservados.</p>
         <p>Términos de servicio | Política de privacidad | Contáctanos</p>
     </footer>
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const err = document.getElementById('register-error');
+            const errText = document.getElementById('register-error-text');
+            err.style.display = 'none';
+
+            const fd = new FormData(this);
+            const payload = {
+                name: fd.get('name'),
+                email: fd.get('email'),
+                password: fd.get('password'),
+                password_confirmation: fd.get('password_confirmation'),
+            };
+
+            const btn = this.querySelector('.submit');
+            btn.disabled = true;
+
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            btn.disabled = false;
+
+            if (!res.ok) {
+                let msg = 'No pudimos crear la cuenta.';
+                try {
+                    const data = await res.json();
+                    if (data.message) msg = data.message;
+                    if (data.errors) {
+                        const parts = Object.values(data.errors).flat();
+                        if (parts.length) msg = parts.join(' ');
+                    }
+                } catch (x) {}
+                errText.textContent = msg;
+                err.style.display = 'flex';
+                return;
+            }
+
+            const data = await res.json();
+            const role = data.user && data.user.role;
+            if (role === 'externo') {
+                window.location.href = '/catalogo';
+                return;
+            }
+            window.location.href = '/';
+        });
+    </script>
 </body>
 </html>

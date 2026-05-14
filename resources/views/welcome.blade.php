@@ -97,6 +97,29 @@
             box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
         }
 
+        .flash-banner {
+            background: #fff2f2;
+            border-bottom: 1px solid rgba(255, 107, 53, 0.25);
+            color: #6a2a1c;
+            padding: 0.85rem 2rem;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        .nav-user {
+            color: rgba(255,255,255,0.9);
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .nav-user i {
+            color: #ff9f1c;
+        }
+
         /* ==================== HERO SECTION ==================== */
         .hero {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
@@ -386,6 +409,9 @@
     </style>
 </head>
 <body>
+    @if (session('catalogo_denied'))
+        <div class="flash-banner">{{ session('catalogo_denied') }}</div>
+    @endif
     <!-- NAVBAR -->
     <nav>
         <a href="/" class="logo">
@@ -393,12 +419,27 @@
             <span>carsTUmotor</span>
         </a>
         <div class="nav-buttons">
-            <a class="btn btn-login" href="/login">
-                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
-            </a>
-            <a class="btn btn-register" href="/register">
-                <i class="fas fa-user-plus"></i> Registrarse
-            </a>
+            @auth
+                @if (auth()->user()->hasRole(\App\Models\User::ROLE_EXTERNO))
+                    <a class="btn btn-register" href="/catalogo">
+                        <i class="fas fa-car"></i> Catálogo
+                    </a>
+                @endif
+                <span class="nav-user"><i class="fas fa-user-circle"></i> {{ auth()->user()->name }}</span>
+                <form action="/logout" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-login" style="cursor:pointer;">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </form>
+            @else
+                <a class="btn btn-login" href="/login">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                </a>
+                <a class="btn btn-register" href="/register">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </a>
+            @endauth
         </div>
     </nav>
 

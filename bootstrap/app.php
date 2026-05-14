@@ -14,6 +14,24 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'externo' => \App\Http\Middleware\EnsureUserIsExterno::class,
+        ]);
+
+        $middleware->redirectGuestsTo('/login');
+        $middleware->redirectUsersTo(function () {
+            $user = auth()->user();
+
+            if ($user && $user->hasRole(\App\Models\User::ROLE_EXTERNO)) {
+                return '/catalogo';
+            }
+
+            return '/';
+        });
+
+        $middleware->appendToGroup('api', [
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -26,8 +26,8 @@ Route::middleware('auth')->group(function () {
     // Usuario Externo
     Route::middleware('role:' . User::ROLE_EXTERNO)->group(function () {
         Route::get('/vehiculos', [VehiculoController::class, 'index']);
-        Route::get('/vehiculos/{id}', [VehiculoController::class, 'show']);
         Route::get('/vehiculos/buscar', [VehiculoController::class, 'search']);
+        Route::get('/vehiculos/{id}', [VehiculoController::class, 'show']);
 
         Route::post('/citas', [CitaController::class, 'store']);
         Route::get('/citas', [CitaController::class, 'index']);

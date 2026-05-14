@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrarse - carsTUmotor</title>
+    <title>Verificar correo - carsTUmotor</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/user-nav.css') }}">
     <style>
@@ -223,7 +223,32 @@
 
         .form-subtitle {
             color: #666;
-            margin-bottom: 1.4rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .body-text {
+            color: #555;
+            line-height: 1.75;
+            margin-bottom: 1.1rem;
+            font-size: 0.98rem;
+        }
+
+        .email-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 0.75rem;
+            border-radius: 12px;
+            background: #f6f6f6;
+            border: 1px solid rgba(0,0,0,0.08);
+            font-weight: 800;
+            color: #1a1a2e;
+            font-size: 0.92rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .email-hint i {
+            color: #ff6b35;
         }
 
         form {
@@ -231,41 +256,7 @@
             gap: 1rem;
         }
 
-        .field {
-            display: grid;
-            gap: 0.45rem;
-        }
-
-        .label {
-            font-weight: 800;
-            color: #1a1a2e;
-            font-size: 0.95rem;
-        }
-
-        .control {
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            background: #f6f6f6;
-            border: 1px solid rgba(0,0,0,0.08);
-            border-radius: 12px;
-            padding: 0.85rem 0.95rem;
-        }
-
-        .control i {
-            color: #ff6b35;
-        }
-
-        .control input {
-            border: none;
-            outline: none;
-            background: transparent;
-            width: 100%;
-            font-size: 1rem;
-        }
-
         .submit {
-            margin-top: 0.4rem;
             padding: 0.95rem 1.2rem;
             border-radius: 12px;
             border: none;
@@ -286,17 +277,56 @@
             box-shadow: 0 12px 30px rgba(255, 107, 53, 0.22);
         }
 
+        .submit.secondary {
+            background: #fff;
+            color: #1a1a2e;
+            border: 1px solid rgba(0,0,0,0.12);
+        }
+
+        .submit.secondary:hover {
+            border-color: rgba(255, 107, 53, 0.45);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 0.35rem 0;
+            color: #888;
+            font-weight: 800;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            height: 1px;
+            background: rgba(0,0,0,0.10);
+            flex: 1;
+        }
+
         .note {
-            background: #fff2f2;
-            border: 1px solid rgba(255, 107, 53, 0.20);
+            background: #fff7ed;
+            border: 1px solid rgba(255, 107, 53, 0.22);
             border-radius: 12px;
             padding: 0.9rem;
-            color: #6a2a1c;
+            color: #7c2d12;
             font-weight: 700;
             font-size: 0.95rem;
             display: flex;
             gap: 0.65rem;
             align-items: flex-start;
+        }
+
+        .note.ok {
+            background: #ecfdf5;
+            border-color: rgba(16, 185, 129, 0.28);
+            color: #065f46;
+        }
+
+        .note.ok i {
+            color: #10b981;
+            margin-top: 2px;
         }
 
         .link {
@@ -367,97 +397,61 @@
             <section class="panel left">
                 <div class="left-inner">
                     <div>
-                        <div class="tag"><i class="fas fa-user-plus"></i> Crear cuenta</div>
-                        <h1>Sumate a carsTUmotor</h1>
-                        <p>Completá el formulario para crear tu cuenta. Te pediremos verificar el correo antes de usar todas las funciones.</p>
+                        <div class="tag"><i class="fas fa-envelope-circle-check"></i> Un paso más</div>
+                        <h1>Confirmá tu correo</h1>
+                        <p>Por seguridad necesitamos verificar que el email sea tuyo. Revisá la bandeja de entrada y la carpeta de spam.</p>
                     </div>
 
                     <div class="benefits">
-                        <div class="benefit"><i class="fas fa-list"></i> Accedé al catálogo completo</div>
-                        <div class="benefit"><i class="fas fa-bell"></i> Recibí avisos personalizados</div>
-                        <div class="benefit"><i class="fas fa-shield"></i> Perfil y datos protegidos</div>
+                        <div class="benefit"><i class="fas fa-link"></i> Abrí el enlace que te enviamos</div>
+                        <div class="benefit"><i class="fas fa-rotate"></i> Si no llega, podés reenviar el correo</div>
+                        <div class="benefit"><i class="fas fa-car-side"></i> Después explorá el catálogo con tu cuenta</div>
                     </div>
                 </div>
             </section>
 
             <section class="panel right">
-                <div class="form-title">Registrarse</div>
-                <div class="form-subtitle">Creá tu cuenta en pocos pasos</div>
+                <div class="form-title">Verificá tu correo</div>
+                <div class="form-subtitle">Te enviamos un enlace de verificación</div>
 
-                <form action="/register" method="POST">
+                <div class="email-hint">
+                    <i class="fas fa-at"></i>
+                    <span>{{ auth()->user()->email }}</span>
+                </div>
+
+                <p class="body-text">
+                    Antes de continuar, hacé clic en el enlace del correo que te mandamos al registrarte. Si no ves el mensaje, esperá unos minutos o pedí un reenvío.
+                </p>
+
+                @if (session('status') === 'verification-link-sent')
+                    <div class="note ok" style="margin-bottom: 1rem;" role="status">
+                        <i class="fas fa-paper-plane"></i>
+                        <div>Te enviamos un nuevo enlace de verificación. Revisá tu correo.</div>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('verification.send') }}">
                     @csrf
-                    <div class="field">
-                        <div class="label">Nombre</div>
-                        <div class="control">
-                            <i class="fas fa-user"></i>
-                            <input type="text" name="name" value="{{ old('name') }}" placeholder="Tu nombre" autocomplete="name" required>
-                        </div>
-                        @error('name')
-                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="field">
-                        <div class="label">Email</div>
-                        <div class="control">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" name="email" value="{{ old('email') }}" placeholder="tuemail@email.com" autocomplete="email" required>
-                        </div>
-                        @error('email')
-                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="field">
-                        <div class="label">Teléfono (opcional)</div>
-                        <div class="control">
-                            <i class="fas fa-phone"></i>
-                            <input type="text" name="phone" value="{{ old('phone') }}" placeholder="+57 300 123 4567" autocomplete="tel">
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <div class="label">Tipo de cuenta</div>
-                        <div class="control">
-                            <i class="fas fa-user-tag"></i>
-                            <select name="role" required style="width: 100%; border: none; background: transparent; font-size: 1rem; outline: none;">
-                                <option value="externo" {{ old('role') == 'externo' ? 'selected' : '' }}>Usuario externo</option>
-                                <option value="jefe" {{ old('role') == 'jefe' ? 'selected' : '' }}>Jefe</option>
-                                <option value="negocios_internacionales" {{ old('role') == 'negocios_internacionales' ? 'selected' : '' }}>Profesional de negocios internacionales</option>
-                                <option value="contador" {{ old('role') == 'contador' ? 'selected' : '' }}>Contador / Finanzas</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <div class="label">Contraseña</div>
-                        <div class="control">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" name="password" placeholder="••••••••" autocomplete="new-password" required>
-                        </div>
-                        @error('password')
-                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="field">
-                        <div class="label">Confirmar contraseña</div>
-                        <div class="control">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" name="password_confirmation" placeholder="••••••••" autocomplete="new-password" required>
-                        </div>
-                    </div>
-
                     <button class="submit" type="submit">
-                        <i class="fas fa-arrow-right"></i> Crear cuenta
+                        <i class="fas fa-paper-plane"></i> Reenviar correo de verificación
                     </button>
+                </form>
 
-                    <div class="note">
-                        <i class="fas fa-circle-info" style="margin-top: 2px;"></i>
-                        <div>
-                            ¿Ya tenés cuenta? Iniciá sesión en <a class="link" href="/login">Iniciar sesión</a>.
-                        </div>
-                    </div>
+                <div class="divider">o</div>
+
+                <a class="submit secondary" href="/catalogo" style="text-decoration: none;">
+                    <i class="fas fa-layer-group"></i> Ir al catálogo
+                </a>
+
+                <p class="body-text" style="margin-top: 1rem; margin-bottom: 0;">
+                    ¿Usaste otro correo? Podés <a class="link" href="/">volver al inicio</a> o cerrar sesión y registrarte de nuevo.
+                </p>
+
+                <form method="POST" action="{{ route('logout') }}" style="margin-top: 0.75rem;">
+                    @csrf
+                    <button class="submit secondary" type="submit">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                    </button>
                 </form>
             </section>
         </div>

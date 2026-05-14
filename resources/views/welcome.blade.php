@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>carsTUmotor - Tu comercializadora de autos de confianza</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/user-nav.css') }}">
     <style>
         * {
             margin: 0;
@@ -386,37 +387,17 @@
     </style>
 </head>
 <body>
-    <!-- NAVBAR -->
-    <nav>
-        <a href="/" class="logo">
-            <i class="fas fa-car-side"></i>
-            <span>carsTUmotor</span>
-        </a>
-        <div class="nav-buttons">
-            @auth
-                <span style="color: #fff; font-weight: 600;">{{ auth()->user()->name }}</span>
-                <form method="POST" action="/logout" style="display:inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-login" style="cursor:pointer;">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-                    </button>
-                </form>
-            @else
-                <a class="btn btn-login" href="/login">
-                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión
-                </a>
-                <a class="btn btn-register" href="/register">
-                    <i class="fas fa-user-plus"></i> Registrarse
-                </a>
-            @endauth
-        </div>
-    </nav>
+    @include('partials.site-nav')
 
     <!-- HERO SECTION -->
     <section class="hero">
         <div class="hero-content">
             <h1>Bienvenido a carsTUmotor</h1>
-            <p class="hero-subtitle">La mejor plataforma para encontrar tu próximo vehículo</p>
+            @auth
+                <p class="hero-subtitle">Hola, {{ strtok(auth()->user()->name, ' ') }} — tu cuenta está activa. Explorá el catálogo o volvé cuando quieras.</p>
+            @else
+                <p class="hero-subtitle">La mejor plataforma para encontrar tu próximo vehículo</p>
+            @endauth
             <p class="hero-description">
                 Explora nuestra amplia selección de vehículos de calidad, con garantía de autenticidad 
                 y las mejores opciones de financiamiento. Tu auto de ensueño está a un clic de distancia.

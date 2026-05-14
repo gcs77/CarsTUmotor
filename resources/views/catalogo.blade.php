@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo - carsTUmotor</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/user-nav.css') }}">
     <style>
         * {
             margin: 0;
@@ -439,6 +440,45 @@
             }
         }
 
+        .flash-banner {
+            max-width: 1200px;
+            margin: 1rem auto 0;
+            padding: 0 2rem;
+        }
+
+        .flash {
+            border-radius: 14px;
+            padding: 0.95rem 1.1rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            font-weight: 800;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+        }
+
+        .flash.success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .flash.success i {
+            color: #10b981;
+            margin-top: 2px;
+        }
+
+        .flash.info {
+            background: #eff6ff;
+            color: #1e3a8a;
+            border-color: rgba(59, 130, 246, 0.25);
+        }
+
+        .flash.info i {
+            color: #3b82f6;
+            margin-top: 2px;
+        }
+
         @media (max-width: 768px) {
             nav {
                 flex-direction: column;
@@ -470,30 +510,25 @@
     </style>
 </head>
 <body>
-    <nav>
-        <a href="/" class="logo">
-            <i class="fas fa-car-side"></i>
-            <span>carsTUmotor</span>
-        </a>
-        <div class="nav-buttons">
-            @auth
-                <span style="color: #fff; font-weight: 600;">{{ auth()->user()->name }}</span>
-                <form method="POST" action="/logout" style="display:inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-login" style="cursor:pointer;">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-                    </button>
-                </form>
-            @else
-                <a class="btn btn-login" href="/login">
-                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión
-                </a>
-                <a class="btn btn-register" href="/register">
-                    <i class="fas fa-user-plus"></i> Registrarse
-                </a>
-            @endauth
+    @include('partials.site-nav')
+
+    @if (session('verified'))
+        <div class="flash-banner">
+            <div class="flash success" role="status">
+                <i class="fas fa-circle-check"></i>
+                <span>Correo verificado correctamente. Ya podés seguir usando carsTUmotor con tu cuenta.</span>
+            </div>
         </div>
-    </nav>
+    @endif
+
+    @if (session('status') === 'verification-link-sent')
+        <div class="flash-banner">
+            <div class="flash info" role="status">
+                <i class="fas fa-paper-plane"></i>
+                <span>Te enviamos un nuevo enlace de verificación al correo que registraste.</span>
+            </div>
+        </div>
+    @endif
 
     <header class="page-header">
         <div class="header-inner">
@@ -503,7 +538,13 @@
                 <span>Catálogo</span>
             </div>
             <h1 class="page-title">Catálogo de vehículos</h1>
-            <p class="page-subtitle">Explora nuestros vehículos disponibles y agenda tu asesoría personalizada.</p>
+            <p class="page-subtitle">
+                @auth
+                    Hola, {{ strtok(auth()->user()->name, ' ') }} — acá ves los vehículos disponibles. Usá los filtros para acotar la búsqueda.
+                @else
+                    Explorá nuestros vehículos disponibles y agendá tu asesoría personalizada.
+                @endauth
+            </p>
         </div>
     </header>
 

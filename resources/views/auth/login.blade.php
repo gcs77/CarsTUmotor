@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión - carsTUmotor</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/user-nav.css') }}">
     <style>
         * {
             margin: 0;
@@ -399,20 +400,7 @@
     </style>
 </head>
 <body>
-    <nav>
-        <a href="/" class="logo">
-            <i class="fas fa-car-side"></i>
-            <span>carsTUmotor</span>
-        </a>
-        <div class="nav-buttons">
-            <a class="btn btn-login" href="/login">
-                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
-            </a>
-            <a class="btn btn-register" href="/register">
-                <i class="fas fa-user-plus"></i> Registrarse
-            </a>
-        </div>
-    </nav>
+    @include('partials.site-nav')
 
     <main class="page">
         <div class="wrap">
@@ -421,7 +409,7 @@
                     <div>
                         <div class="tag"><i class="fas fa-shield"></i> Acceso seguro</div>
                         <h1>Ingresá a tu cuenta</h1>
-                        <p>Esta pantalla es solo estética por ahora. Más adelante conectamos la autenticación, validaciones y base de datos.</p>
+                        <p>Ingresá con tu email y contraseña para ver el catálogo, guardar preferencias y gestionar tu cuenta.</p>
                     </div>
 
                     <div class="benefits">

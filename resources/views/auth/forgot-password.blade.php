@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperar contraseña - carsTUmotor</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/user-nav.css') }}">
     <style>
         * {
             margin: 0;
@@ -359,20 +360,7 @@
     </style>
 </head>
 <body>
-    <nav>
-        <a href="/" class="logo">
-            <i class="fas fa-car-side"></i>
-            <span>carsTUmotor</span>
-        </a>
-        <div class="nav-buttons">
-            <a class="btn btn-login" href="/login">
-                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
-            </a>
-            <a class="btn btn-register" href="/register">
-                <i class="fas fa-user-plus"></i> Registrarse
-            </a>
-        </div>
-    </nav>
+    @include('partials.site-nav')
 
     <main class="page">
         <div class="wrap">

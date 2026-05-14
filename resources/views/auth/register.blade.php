@@ -381,7 +381,7 @@
                     <div>
                         <div class="tag"><i class="fas fa-user-plus"></i> Crear cuenta</div>
                         <h1>Sumate a carsTUmotor</h1>
-                        <p>Creá tu cuenta de cliente para acceder al catálogo, ver precios y solicitar la compra de tu próximo vehículo.</p>
+                        <p>Esta pantalla es solo estética por ahora. Más adelante conectamos validaciones, guardado en base de datos y el backend.</p>
                     </div>
 
                     <div class="benefits">
@@ -396,25 +396,48 @@
                 <div class="form-title">Registrarse</div>
                 <div class="form-subtitle">Creá tu cuenta en pocos pasos</div>
 
-                <div class="note" id="register-error" style="display:none;background:#fff2f2;border-color:rgba(255,107,53,0.35);color:#6a2a1c;">
-                    <i class="fas fa-circle-exclamation" style="margin-top: 2px;"></i>
-                    <div id="register-error-text"></div>
-                </div>
-
-                <form id="register-form" method="post" action="#">
+                <form action="/register" method="POST">
+                    @csrf
                     <div class="field">
                         <div class="label">Nombre</div>
                         <div class="control">
                             <i class="fas fa-user"></i>
-                            <input type="text" name="name" placeholder="Tu nombre" autocomplete="name" required>
+                            <input type="text" name="name" value="{{ old('name') }}" placeholder="Tu nombre" autocomplete="name" required>
                         </div>
+                        @error('name')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="field">
                         <div class="label">Email</div>
                         <div class="control">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" name="email" placeholder="tuemail@email.com" autocomplete="email" required>
+                            <input type="email" name="email" value="{{ old('email') }}" placeholder="tuemail@email.com" autocomplete="email" required>
+                        </div>
+                        @error('email')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="field">
+                        <div class="label">Teléfono (opcional)</div>
+                        <div class="control">
+                            <i class="fas fa-phone"></i>
+                            <input type="text" name="phone" value="{{ old('phone') }}" placeholder="+57 300 123 4567" autocomplete="tel">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="label">Tipo de cuenta</div>
+                        <div class="control">
+                            <i class="fas fa-user-tag"></i>
+                            <select name="role" required style="width: 100%; border: none; background: transparent; font-size: 1rem; outline: none;">
+                                <option value="externo" {{ old('role') == 'externo' ? 'selected' : '' }}>Usuario externo</option>
+                                <option value="jefe" {{ old('role') == 'jefe' ? 'selected' : '' }}>Jefe</option>
+                                <option value="negocios_internacionales" {{ old('role') == 'negocios_internacionales' ? 'selected' : '' }}>Profesional de negocios internacionales</option>
+                                <option value="contador" {{ old('role') == 'contador' ? 'selected' : '' }}>Contador / Finanzas</option>
+                            </select>
                         </div>
                     </div>
 
@@ -424,6 +447,9 @@
                             <i class="fas fa-lock"></i>
                             <input type="password" name="password" placeholder="••••••••" autocomplete="new-password" required>
                         </div>
+                        @error('password')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="field">
@@ -453,60 +479,5 @@
         <p>&copy; 2024 carsTUmotor. Todos los derechos reservados.</p>
         <p>Términos de servicio | Política de privacidad | Contáctanos</p>
     </footer>
-    <script>
-        document.getElementById('register-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const err = document.getElementById('register-error');
-            const errText = document.getElementById('register-error-text');
-            err.style.display = 'none';
-
-            const fd = new FormData(this);
-            const payload = {
-                name: fd.get('name'),
-                email: fd.get('email'),
-                password: fd.get('password'),
-                password_confirmation: fd.get('password_confirmation'),
-            };
-
-            const btn = this.querySelector('.submit');
-            btn.disabled = true;
-
-            const res = await fetch('/api/register', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify(payload),
-            });
-
-            btn.disabled = false;
-
-            if (!res.ok) {
-                let msg = 'No pudimos crear la cuenta.';
-                try {
-                    const data = await res.json();
-                    if (data.message) msg = data.message;
-                    if (data.errors) {
-                        const parts = Object.values(data.errors).flat();
-                        if (parts.length) msg = parts.join(' ');
-                    }
-                } catch (x) {}
-                errText.textContent = msg;
-                err.style.display = 'flex';
-                return;
-            }
-
-            const data = await res.json();
-            const role = data.user && data.user.role;
-            if (role === 'externo') {
-                window.location.href = '/catalogo';
-                return;
-            }
-            window.location.href = '/';
-        });
-    </script>
 </body>
 </html>

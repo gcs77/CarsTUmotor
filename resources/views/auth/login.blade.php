@@ -421,7 +421,7 @@
                     <div>
                         <div class="tag"><i class="fas fa-shield"></i> Acceso seguro</div>
                         <h1>Ingresá a tu cuenta</h1>
-                        <p>Ingresá con tu cuenta de cliente para ver el catálogo completo, fichas con precio y solicitar la compra de tu vehículo.</p>
+                        <p>Esta pantalla es solo estética por ahora. Más adelante conectamos la autenticación, validaciones y base de datos.</p>
                     </div>
 
                     <div class="benefits">
@@ -436,18 +436,17 @@
                 <div class="form-title">Iniciar sesión</div>
                 <div class="form-subtitle">Completá tus datos para continuar</div>
 
-                <div class="note" id="login-error" style="display:none;background:#fff2f2;border-color:rgba(255,107,53,0.35);color:#6a2a1c;">
-                    <i class="fas fa-circle-exclamation" style="margin-top: 2px;"></i>
-                    <div id="login-error-text"></div>
-                </div>
-
-                <form id="login-form" method="post" action="#">
+                <form action="/login" method="POST">
+                    @csrf
                     <div class="field">
                         <div class="label">Email</div>
                         <div class="control">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" name="email" placeholder="tuemail@email.com" autocomplete="email" required>
+                            <input type="email" name="email" value="{{ old('email') }}" placeholder="tuemail@email.com" autocomplete="email" required>
                         </div>
+                        @error('email')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="field">
@@ -456,6 +455,9 @@
                             <i class="fas fa-lock"></i>
                             <input type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
                         </div>
+                        @error('password')
+                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="row">
@@ -488,54 +490,5 @@
         <p>&copy; 2024 carsTUmotor. Todos los derechos reservados.</p>
         <p>Términos de servicio | Política de privacidad | Contáctanos</p>
     </footer>
-    <script>
-        document.getElementById('login-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const err = document.getElementById('login-error');
-            const errText = document.getElementById('login-error-text');
-            err.style.display = 'none';
-
-            const fd = new FormData(this);
-            const payload = {
-                email: fd.get('email'),
-                password: fd.get('password'),
-            };
-
-            const btn = this.querySelector('.submit');
-            btn.disabled = true;
-
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify(payload),
-            });
-
-            btn.disabled = false;
-
-            if (!res.ok) {
-                let msg = 'No pudimos iniciar sesión.';
-                try {
-                    const data = await res.json();
-                    if (data.message) msg = data.message;
-                } catch (x) {}
-                errText.textContent = msg;
-                err.style.display = 'flex';
-                return;
-            }
-
-            const data = await res.json();
-            const role = data.user && data.user.role;
-            if (role === 'externo') {
-                window.location.href = '/catalogo';
-                return;
-            }
-            window.location.href = '/';
-        });
-    </script>
 </body>
 </html>

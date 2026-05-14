@@ -97,29 +97,6 @@
             box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
         }
 
-        .flash-banner {
-            background: #fff2f2;
-            border-bottom: 1px solid rgba(255, 107, 53, 0.25);
-            color: #6a2a1c;
-            padding: 0.85rem 2rem;
-            text-align: center;
-            font-weight: 800;
-            font-size: 0.95rem;
-        }
-
-        .nav-user {
-            color: rgba(255,255,255,0.9);
-            font-weight: 700;
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-        }
-
-        .nav-user i {
-            color: #ff9f1c;
-        }
-
         /* ==================== HERO SECTION ==================== */
         .hero {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
@@ -409,9 +386,6 @@
     </style>
 </head>
 <body>
-    @if (session('catalogo_denied'))
-        <div class="flash-banner">{{ session('catalogo_denied') }}</div>
-    @endif
     <!-- NAVBAR -->
     <nav>
         <a href="/" class="logo">
@@ -420,16 +394,11 @@
         </a>
         <div class="nav-buttons">
             @auth
-                @if (auth()->user()->hasRole(\App\Models\User::ROLE_EXTERNO))
-                    <a class="btn btn-register" href="/catalogo">
-                        <i class="fas fa-car"></i> Catálogo
-                    </a>
-                @endif
-                <span class="nav-user"><i class="fas fa-user-circle"></i> {{ auth()->user()->name }}</span>
-                <form action="/logout" method="POST" style="display:inline;">
+                <span style="color: #fff; font-weight: 600;">{{ auth()->user()->name }}</span>
+                <form method="POST" action="/logout" style="display:inline;">
                     @csrf
                     <button type="submit" class="btn btn-login" style="cursor:pointer;">
-                        <i class="fas fa-sign-out-alt"></i> Salir
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
                     </button>
                 </form>
             @else

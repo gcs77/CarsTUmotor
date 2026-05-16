@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\VehiculoController as AdminVehiculoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehiculoController;
+use App\Http\Controllers\DashboardController;
 use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -50,4 +51,5 @@ Route::middleware(['auth', 'role:jefe,contador'])
     ->name('admin.')
     ->group(function () {
         Route::resource('vehiculos', AdminVehiculoController::class)->except(['show']);
+        Route::get('dashboard/contador', [DashboardController::class, 'contador'])->name('dashboard.contador');
     });

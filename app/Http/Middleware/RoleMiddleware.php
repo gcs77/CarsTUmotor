@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
@@ -38,6 +39,11 @@ class RoleMiddleware
             }
 
             return redirect()->guest(route('login'));
+        }
+
+        // Si el usuario es `jefe`, le concedemos acceso global (super-rol).
+        if ($user->hasRole(User::ROLE_JEFE)) {
+            return $next($request);
         }
 
         $hasRole = false;

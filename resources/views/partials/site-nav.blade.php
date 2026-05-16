@@ -47,9 +47,17 @@
                     <a class="user-menu-item" href="/catalogo" role="menuitem">
                         <i class="fas fa-layer-group"></i> Catálogo
                     </a>
-                    @if ($u->hasRole(\App\Models\User::ROLE_JEFE) || $u->hasRole(\App\Models\User::ROLE_CONTADOR))
+                    @php
+                        $currentRole = strtolower(trim($u->role ?? ''));
+                        $isAdminRole = in_array($currentRole, [\App\Models\User::ROLE_JEFE, \App\Models\User::ROLE_CONTADOR], true);
+                    @endphp
+
+                    @if ($isAdminRole)
                         <a class="user-menu-item" href="{{ route('admin.vehiculos.index') }}" role="menuitem">
                             <i class="fas fa-clipboard-list"></i> Gestionar vehículos
+                        </a>
+                        <a class="user-menu-item" href="{{ route('admin.dashboard.contador') }}" role="menuitem">
+                            <i class="fas fa-chart-line"></i> Dashboard
                         </a>
                     @endif
                     <a class="user-menu-item" href="/" role="menuitem">

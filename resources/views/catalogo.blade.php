@@ -172,6 +172,41 @@
             max-width: 720px;
         }
 
+        .catalog-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1.4rem;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            padding: 0.85rem 1.3rem;
+            border-radius: 10px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.25s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b35, #ff9f1c);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.28);
+        }
+
+        .btn-primary:hover,
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
         /* ==================== FILTER BAR (ESTÉTICO) ==================== */
         .filters-wrap {
             max-width: 1200px;
@@ -565,6 +600,23 @@
                     Explorá nuestros vehículos disponibles y agendá tu asesoría personalizada.
                 @endauth
             </p>
+
+            @auth
+                @php
+                    $userRole = strtolower(trim(auth()->user()->role ?? ''));
+                    $isAdminRole = in_array($userRole, [\App\Models\User::ROLE_JEFE, \App\Models\User::ROLE_CONTADOR], true);
+                @endphp
+                @if ($isAdminRole)
+                    <div class="catalog-actions">
+                        <a class="btn btn-secondary" href="{{ route('admin.vehiculos.index') }}">
+                            <i class="fas fa-clipboard-list"></i> Ir al CRUD de vehículos
+                        </a>
+                        <a class="btn btn-primary" href="{{ route('admin.dashboard.contador') }}">
+                            <i class="fas fa-chart-line"></i> Ver Dashboard
+                        </a>
+                    </div>
+                @endif
+            @endauth
         </div>
     </header>
 

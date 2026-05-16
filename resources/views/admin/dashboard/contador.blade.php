@@ -68,6 +68,13 @@
             color: #21243d;
         }
 
+        .chart-card canvas {
+            width: 100% !important;
+            min-height: 320px !important;
+            max-height: 360px !important;
+            display: block;
+        }
+
         .chart-list {
             display: grid;
             grid-template-columns: repeat(2, minmax(140px, 1fr));
@@ -172,6 +179,9 @@
         $gastosTotales = $estado['costos_ventas'] + $estado['gastos_operativos'] + $estado['impuestos'];
         $valorReal = max($flujo['entradas'], 1);
         $profitRatio = $flujo['flujo_neto'] / $valorReal * 100;
+
+        $useSampleCostData = ($estado['costos_ventas'] + $estado['gastos_operativos'] + $estado['impuestos']) <= 0;
+        $useSampleProfitData = ($estado['ingresos'] + $gastosTotales + max($estado['utilidad_neta'], 0)) <= 0;
     @endphp
 
     <div class="dashboard-grid">
@@ -201,6 +211,9 @@
         <div class="chart-card">
             <h3>Distribución de costos</h3>
             <canvas id="costBreakdownChart" height="280"></canvas>
+            @if($useSampleCostData)
+                <p style="margin-top:0.75rem; color:#6b7280; font-size:0.95rem;">Mostrando datos de ejemplo porque no hay costos reales cargados aún.</p>
+            @endif
             <div class="chart-footer">
                 <div class="chart-pill label-costos"><span></span> Costos de venta</div>
                 <div class="chart-pill label-gastos"><span></span> Gastos operativos</div>
@@ -211,6 +224,9 @@
         <div class="chart-card">
             <h3>Utilidad vs Gastos</h3>
             <canvas id="profitVsExpenseChart" height="280"></canvas>
+            @if($useSampleProfitData)
+                <p style="margin-top:0.75rem; color:#6b7280; font-size:0.95rem;">Mostrando datos de ejemplo porque no existen ingresos y gastos reales en este periodo.</p>
+            @endif
             <div class="chart-list">
                 <div class="chart-summary">
                     <strong>Ingresos</strong>
@@ -308,39 +324,49 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const gastosData = [
+        const actualCostData = [
             {{ $estado['costos_ventas'] }},
             {{ $estado['gastos_operativos'] }},
             {{ $estado['impuestos'] }}
         ];
 
-        const utilidadData = [
-            {{ max($estado['utilidad_bruta'], 0) }},
-            {{ max($estado['utilidad_operativa'], 0) }},
+        const actualProfitData = [
+            {{ $estado['ingresos'] }},
+            {{ $gastosTotales }},
             {{ max($estado['utilidad_neta'], 0) }}
         ];
+
+        const costData = actualCostData.some(value => value > 0)
+            ? actualCostData
+            : [52000, 26000, 14000];
+
+        const profitData = actualProfitData.some(value => value > 0)
+            ? actualProfitData
+            : [150000, 85000, 65000];
+
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
+                tooltip: { callbacks: { label: ctx => ctx.label + ': $' + ctx.parsed.toLocaleString('es-AR', {minimumFractionDigits:2}) } }
+            },
+            animation: { duration: 900, easing: 'easeOutQuart' }
+        };
 
         new Chart(document.getElementById('costBreakdownChart'), {
             type: 'doughnut',
             data: {
                 labels: ['Costos de venta', 'Gastos operativos', 'Impuestos'],
                 datasets: [{
-                    data: gastosData,
+                    data: costData,
                     backgroundColor: ['#3b82f6', '#f97316', '#ef4444'],
                     borderColor: '#ffffff',
                     borderWidth: 3,
                     hoverOffset: 12,
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
-                    tooltip: { callbacks: { label: ctx => ctx.label + ': $' + ctx.parsed.toLocaleString('es-AR', {minimumFractionDigits:2}) } }
-                },
-                animation: { duration: 900, easing: 'easeOutQuart' }
-            }
+            options: chartOptions
         });
 
         new Chart(document.getElementById('profitVsExpenseChart'), {
@@ -348,26 +374,14 @@
             data: {
                 labels: ['Ingresos', 'Total Gastos', 'Utilidad Neta'],
                 datasets: [{
-                    data: [
-                        {{ $estado['ingresos'] }},
-                        {{ $gastosTotales }},
-                        {{ max($estado['utilidad_neta'], 0) }}
-                    ],
+                    data: profitData,
                     backgroundColor: ['#2563eb', '#fb923c', '#10b981'],
                     borderColor: '#ffffff',
                     borderWidth: 3,
                     hoverOffset: 12,
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
-                    tooltip: { callbacks: { label: ctx => ctx.label + ': $' + ctx.parsed.toLocaleString('es-AR', {minimumFractionDigits:2}) } }
-                },
-                animation: { duration: 900, easing: 'easeOutQuad' }
-            }
+            options: chartOptions
         });
     </script>
 @endsection

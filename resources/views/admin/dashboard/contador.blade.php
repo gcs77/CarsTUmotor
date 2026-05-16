@@ -176,13 +176,63 @@
     </div>
 
     @php
-        $gastosTotales = $estado['costos_ventas'] + $estado['gastos_operativos'] + $estado['impuestos'];
+        $sampleCostosVentas = 52000;
+        $sampleGastosOperativos = 26000;
+        $sampleImpuestos = 14000;
+        $sampleIngresos = 150000;
+        $sampleUtilidadBruta = 45000;
+        $sampleUtilidadOperativa = 19000;
+        $sampleUtilidadNeta = 7000;
+
+        $costosVentas = $estado['costos_ventas'] > 0 ? $estado['costos_ventas'] : $sampleCostosVentas;
+        $gastosOperativos = $estado['gastos_operativos'] > 0 ? $estado['gastos_operativos'] : $sampleGastosOperativos;
+        $impuestos = $estado['impuestos'] > 0 ? $estado['impuestos'] : $sampleImpuestos;
+        $ingresos = $estado['ingresos'] > 0 ? $estado['ingresos'] : $sampleIngresos;
+        $utilidadBruta = $estado['utilidad_bruta'] !== 0 ? $estado['utilidad_bruta'] : $sampleUtilidadBruta;
+        $utilidadOperativa = $estado['utilidad_operativa'] !== 0 ? $estado['utilidad_operativa'] : $sampleUtilidadOperativa;
+        $utilidadNeta = $estado['utilidad_neta'] !== 0 ? $estado['utilidad_neta'] : $sampleUtilidadNeta;
+
+        $gastosTotales = $costosVentas + $gastosOperativos + $impuestos;
         $valorReal = max($flujo['entradas'], 1);
         $profitRatio = $flujo['flujo_neto'] / $valorReal * 100;
 
         $useSampleCostData = ($estado['costos_ventas'] + $estado['gastos_operativos'] + $estado['impuestos']) <= 0;
         $useSampleProfitData = ($estado['ingresos'] + $gastosTotales + max($estado['utilidad_neta'], 0)) <= 0;
+        $useSampleData = $useSampleCostData || $useSampleProfitData || $cxp->isEmpty() || $cxc->isEmpty() || $informes->isEmpty();
+
+        $cxpDisplay = $cxp->isNotEmpty()
+            ? $cxp
+            : collect([
+                (object)['descripcion' => 'Mantenimiento general', 'monto' => 12000, 'created_at' => \Illuminate\Support\Carbon::parse('2026-05-08')],
+                (object)['descripcion' => 'Servicios de consultoría', 'monto' => 7500, 'created_at' => \Illuminate\Support\Carbon::parse('2026-05-12')],
+                (object)['descripcion' => 'Pago de energía', 'monto' => 4200, 'created_at' => \Illuminate\Support\Carbon::parse('2026-05-14')],
+            ]);
+
+        $cxcDisplay = $cxc->isNotEmpty()
+            ? $cxc
+            : collect([
+                (object)['descripcion' => 'Cliente: AutoExpress', 'monto' => 18500, 'created_at' => \Illuminate\Support\Carbon::parse('2026-05-09')],
+                (object)['descripcion' => 'Cliente: MotorPlus', 'monto' => 9800, 'created_at' => \Illuminate\Support\Carbon::parse('2026-05-11')],
+                (object)['descripcion' => 'Cliente: RutaSegura', 'monto' => 12600, 'created_at' => \Illuminate\Support\Carbon::parse('2026-05-15')],
+            ]);
+
+        $informesDisplay = $informes->isNotEmpty()
+            ? $informes
+            : collect([
+                (object)['tipo' => 'Balance mensual', 'periodo' => 'Abr 2026', 'ruta' => 'samples/balance_abril.pdf', 'nombre_archivo' => 'Balance_Abril_2026.pdf'],
+                (object)['tipo' => 'Informe de caja', 'periodo' => 'Abr 2026', 'ruta' => 'samples/caja_abril.pdf', 'nombre_archivo' => 'Informe_Caja_2026.pdf'],
+                (object)['tipo' => 'Resumen de impuestos', 'periodo' => 'Abr 2026', 'ruta' => 'samples/impuestos_abril.pdf', 'nombre_archivo' => 'Resumen_Impuestos_2026.pdf'],
+            ]);
     @endphp
+
+    @if($useSampleData)
+        <div class="flash-banner" style="padding:0 1rem; margin-bottom:1rem;">
+            <div class="flash info" role="status" style="border-radius:18px; padding:1rem;">
+                <i class="fas fa-info-circle"></i>
+                <span>Se muestran datos de ejemplo en algunas secciones porque faltan valores reales en el periodo.</span>
+            </div>
+        </div>
+    @endif
 
     <div class="dashboard-grid">
         <div class="dashboard-card">
@@ -192,17 +242,17 @@
         </div>
         <div class="dashboard-card">
             <h3>Gasto de Impuestos</h3>
-            <div class="value">${{ number_format($estado['impuestos'], 2) }}</div>
+            <div class="value">${{ number_format($impuestos, 2) }}</div>
             <div class="label">Total pagado en impuestos</div>
         </div>
         <div class="dashboard-card">
             <h3>Gasto de Operaciones</h3>
-            <div class="value">${{ number_format($estado['gastos_operativos'], 2) }}</div>
+            <div class="value">${{ number_format($gastosOperativos, 2) }}</div>
             <div class="label">Gastos operativos del negocio</div>
         </div>
         <div class="dashboard-card">
             <h3>Ganancia Neta</h3>
-            <div class="value">${{ number_format($estado['utilidad_neta'], 2) }}</div>
+            <div class="value">${{ number_format($utilidadNeta, 2) }}</div>
             <div class="label">Utilidad después de costos e impuestos</div>
         </div>
     </div>
@@ -230,11 +280,11 @@
             <div class="chart-list">
                 <div class="chart-summary">
                     <strong>Ingresos</strong>
-                    <span>${{ number_format($estado['ingresos'], 2) }}</span>
+                    <span>${{ number_format($ingresos, 2) }}</span>
                 </div>
                 <div class="chart-summary">
                     <strong>Utilidad operativa</strong>
-                    <span>${{ number_format($estado['utilidad_operativa'], 2) }}</span>
+                    <span>${{ number_format($utilidadOperativa, 2) }}</span>
                 </div>
             </div>
             <div class="chart-footer">
@@ -249,15 +299,15 @@
         <div style="display:grid; grid-template-columns: repeat(3, minmax(160px, 1fr)); gap:1rem; margin-top:1rem;">
             <div style="background:#f0f9ff; border-radius:16px; padding:1rem;">
                 <strong>Utilidad bruta</strong>
-                <div style="font-size:1.6rem; font-weight:800; margin-top:0.6rem;">${{ number_format($estado['utilidad_bruta'], 2) }}</div>
+                <div style="font-size:1.6rem; font-weight:800; margin-top:0.6rem;">${{ number_format($utilidadBruta, 2) }}</div>
             </div>
             <div style="background:#fef3c7; border-radius:16px; padding:1rem;">
                 <strong>Costos de venta</strong>
-                <div style="font-size:1.6rem; font-weight:800; margin-top:0.6rem;">${{ number_format($estado['costos_ventas'], 2) }}</div>
+                <div style="font-size:1.6rem; font-weight:800; margin-top:0.6rem;">${{ number_format($costosVentas, 2) }}</div>
             </div>
             <div style="background:#ede9fe; border-radius:16px; padding:1rem;">
                 <strong>Ingresos</strong>
-                <div style="font-size:1.6rem; font-weight:800; margin-top:0.6rem;">${{ number_format($estado['ingresos'], 2) }}</div>
+                <div style="font-size:1.6rem; font-weight:800; margin-top:0.6rem;">${{ number_format($ingresos, 2) }}</div>
             </div>
         </div>
     </div>
@@ -270,11 +320,11 @@
                     <tr><th>Descripción</th><th>Monto</th><th>Fecha</th></tr>
                 </thead>
                 <tbody>
-                    @foreach($cxp as $t)
+                    @foreach($cxpDisplay as $t)
                         <tr>
                             <td>{{ $t->descripcion ?? '-' }}</td>
                             <td>${{ number_format($t->monto,2) }}</td>
-                            <td>{{ $t->created_at->format('Y-m-d') }}</td>
+                            <td>{{ $t->created_at instanceof \Illuminate\Support\Carbon ? $t->created_at->format('Y-m-d') : $t->created_at }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -290,11 +340,11 @@
                     <tr><th>Cliente</th><th>Monto</th><th>Vencimiento</th></tr>
                 </thead>
                 <tbody>
-                    @foreach($cxc as $t)
+                    @foreach($cxcDisplay as $t)
                         <tr>
                             <td>{{ $t->descripcion ?? '-' }}</td>
                             <td>${{ number_format($t->monto,2) }}</td>
-                            <td>{{ $t->created_at->format('Y-m-d') }}</td>
+                            <td>{{ $t->created_at instanceof \Illuminate\Support\Carbon ? $t->created_at->format('Y-m-d') : $t->created_at }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -310,7 +360,7 @@
                     <tr><th>Tipo</th><th>Periodo</th><th>Archivo</th></tr>
                 </thead>
                 <tbody>
-                    @foreach($informes as $inf)
+                    @foreach($informesDisplay as $inf)
                         <tr>
                             <td>{{ $inf->tipo }}</td>
                             <td>{{ $inf->periodo }}</td>
@@ -324,25 +374,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const actualCostData = [
-            {{ $estado['costos_ventas'] }},
-            {{ $estado['gastos_operativos'] }},
-            {{ $estado['impuestos'] }}
+        const costData = [
+            {{ $costosVentas }},
+            {{ $gastosOperativos }},
+            {{ $impuestos }}
         ];
 
-        const actualProfitData = [
-            {{ $estado['ingresos'] }},
+        const profitData = [
+            {{ $ingresos }},
             {{ $gastosTotales }},
-            {{ max($estado['utilidad_neta'], 0) }}
+            {{ $utilidadNeta }}
         ];
-
-        const costData = actualCostData.some(value => value > 0)
-            ? actualCostData
-            : [52000, 26000, 14000];
-
-        const profitData = actualProfitData.some(value => value > 0)
-            ? actualProfitData
-            : [150000, 85000, 65000];
 
         const chartOptions = {
             responsive: true,

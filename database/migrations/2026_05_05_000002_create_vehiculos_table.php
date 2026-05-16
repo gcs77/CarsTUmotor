@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('modelo');
             $table->string('color');
             $table->unsignedTinyInteger('puertas');
-            $table->unsignedSmallInteger('hp');
+            $table->unsignedInteger('hp');
             $table->string('imagen')->nullable();
             $table->decimal('precio_cliente', 15, 2);
             $table->decimal('costo_empresa', 15, 2);

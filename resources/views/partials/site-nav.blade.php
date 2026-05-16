@@ -47,6 +47,11 @@
                     <a class="user-menu-item" href="/catalogo" role="menuitem">
                         <i class="fas fa-layer-group"></i> Catálogo
                     </a>
+                    @if ($u->hasRole(\App\Models\User::ROLE_JEFE) || $u->hasRole(\App\Models\User::ROLE_CONTADOR))
+                        <a class="user-menu-item" href="{{ route('admin.vehiculos.index') }}" role="menuitem">
+                            <i class="fas fa-clipboard-list"></i> Gestionar vehículos
+                        </a>
+                    @endif
                     <a class="user-menu-item" href="/" role="menuitem">
                         <i class="fas fa-house"></i> Inicio
                     </a>

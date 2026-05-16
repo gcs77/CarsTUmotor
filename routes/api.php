@@ -34,12 +34,13 @@ Route::middleware('auth')->group(function () {
         Route::patch('/citas/{id}/cancelar', [CitaController::class, 'cancelar']);
     });
 
-    // Jefe
-    Route::middleware('role:' . User::ROLE_JEFE)->group(function () {
+    // KPIs (utilidades netas, impuestos, márgenes): jefe y contador / finanzas
+    Route::middleware('role:' . User::ROLE_JEFE . ',' . User::ROLE_CONTADOR)->group(function () {
         Route::get('/dashboard/ejecutivo', [DashboardController::class, 'ejecutivo']);
     });
 
-    // Profesional Negocios Internacionales
+    // Profesional negocios internacionales: logística y seguimiento interno (pedidos, archivos).
+    // No incluye CRUD del catálogo público de vehículos que consume el cliente (externo).
     Route::middleware('role:' . User::ROLE_NEGOCIOS)->group(function () {
         Route::post('/pedidos', [PedidoController::class, 'store']);
         Route::get('/pedidos', [PedidoController::class, 'index']);
@@ -48,7 +49,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pedidos/{id}/archivos', [PedidoController::class, 'archivos']);
     });
 
-    // Contador / Finanzas
+    // Contador / finanzas: transacciones, informes tipo NIIF / DIAN (vía informes y estados financieros)
     Route::middleware('role:' . User::ROLE_CONTADOR)->group(function () {
         Route::post('/finanzas/transacciones', [FinanzaController::class, 'storeTransaccion']);
         Route::get('/finanzas/informes', [FinanzaController::class, 'listarInformes']);
@@ -57,7 +58,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/finanzas/estado-resultados', [FinanzaController::class, 'estadoResultados']);
         Route::get('/finanzas/cuentas-por-pagar', [FinanzaController::class, 'cuentasPorPagar']);
         Route::get('/finanzas/cuentas-por-cobrar', [FinanzaController::class, 'cuentasPorCobrar']);
+    });
 
+    // Inventario físico / stock: jefe y contador
+    Route::middleware('role:' . User::ROLE_JEFE . ',' . User::ROLE_CONTADOR)->group(function () {
         Route::get('/inventario', [InventarioController::class, 'index']);
         Route::post('/inventario', [InventarioController::class, 'store']);
         Route::put('/inventario/{id}', [InventarioController::class, 'updateStock']);
@@ -65,7 +69,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/inventario/alertas', [InventarioController::class, 'alertas']);
     });
 
-    // Admin general: gestión de vehículos (acceso compartido jefe/contador/negocios si se requiere)
+    // Catálogo público (autos que ve el cliente / externo): alta y edición solo jefe y contador
     Route::middleware('role:' . User::ROLE_JEFE . ',' . User::ROLE_CONTADOR)->group(function () {
         Route::post('/vehiculos', [VehiculoController::class, 'store']);
         Route::put('/vehiculos/{id}', [VehiculoController::class, 'update']);

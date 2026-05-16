@@ -8,15 +8,37 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, string $roles): Response
+    public function handle(Request $request, Closure $next, string $role, string ...$roles): Response
     {
         $user = auth()->user();
+        $requiredRoles = array_merge([$role], $roles);
+        $allowedRoles = [];
 
-        if (!$user) {
-            return response()->json(['message' => 'No autenticado.'], 401);
+        foreach ($requiredRoles as $roleSegment) {
+            foreach (explode(',', $roleSegment) as $item) {
+                $item = trim($item);
+                if ($item !== '') {
+                    $allowedRoles[] = $item;
+                }
+            }
         }
 
-        $allowedRoles = explode(',', $roles);
+        \Log::info('RoleMiddleware check', [
+            'user_exists' => $user ? true : false,
+            'user_id' => $user?->id,
+            'user_email' => $user?->email,
+            'user_role' => $user?->role,
+            'required_roles' => $allowedRoles,
+            'request_path' => $request->path(),
+        ]);
+
+        if (!$user) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'No autenticado.'], 401);
+            }
+
+            return redirect()->guest(route('login'));
+        }
 
         $hasRole = false;
         foreach ($allowedRoles as $role) {
@@ -26,10 +48,19 @@ class RoleMiddleware
             }
         }
 
+        \Log::info('RoleMiddleware result', [
+            'has_role' => $hasRole,
+            'allowed_roles' => $allowedRoles,
+        ]);
+
         if (!$hasRole) {
-            return response()->json([
-                'message' => 'No tiene permisos para acceder a este recurso.',
-            ], 403);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'No tiene permisos para acceder a este recurso.',
+                ], 403);
+            }
+
+            return redirect()->route('catalogo')->with('error', 'No tenés permiso para acceder a esa sección.');
         }
 
         return $next($request);

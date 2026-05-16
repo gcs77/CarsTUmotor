@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\VehiculoController as AdminVehiculoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehiculoController;
+use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -10,7 +12,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/catalogo', [VehiculoController::class, 'catalogo']);
+Route::get('/catalogo', [VehiculoController::class, 'catalogo'])->name('catalogo');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
@@ -42,3 +44,10 @@ Route::middleware('auth')->group(function () {
         return back()->with('status', 'verification-link-sent');
     })->middleware(['throttle:6,1'])->name('verification.send');
 });
+
+Route::middleware(['auth', 'role:jefe,contador'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('vehiculos', AdminVehiculoController::class)->except(['show']);
+    });

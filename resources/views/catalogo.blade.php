@@ -479,6 +479,17 @@
             margin-top: 2px;
         }
 
+        .flash.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: rgba(239, 68, 68, 0.25);
+        }
+
+        .flash.error i {
+            color: #ef4444;
+            margin-top: 2px;
+        }
+
         @media (max-width: 768px) {
             nav {
                 flex-direction: column;
@@ -526,6 +537,15 @@
             <div class="flash info" role="status">
                 <i class="fas fa-paper-plane"></i>
                 <span>Te enviamos un nuevo enlace de verificación al correo que registraste.</span>
+            </div>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="flash-banner">
+            <div class="flash error" role="alert">
+                <i class="fas fa-circle-exclamation"></i>
+                <span>{{ session('error') }}</span>
             </div>
         </div>
     @endif
